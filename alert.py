@@ -13,82 +13,79 @@
 the command of a general. """
 
 #IMPORTS:#
-import config
-import AIlogging as l
-log = l.log()
-cfg = config.Config()
-log.log_status("Finished Imports")
 from requests.exceptions import HTTPError
 #END IMPORTS#
 
 class alertBot(object):
     """Only use checkForGo(), other methods are internal and idk what the hell
     to do with them."""
-    def __init__(self):
+    def __init__(self,cfg,log):
+        self.cfg = cfg
+        self.log = log
         self.r = cfg.redditInstance
     
     def getUsers(self):
         r = self.r
-        signupThread = r.get_submission(submission_id=cfg.alert_thread)
-        log.write(str(signupThread)+"\n")
+        signupThread = r.get_submission(submission_id=self.cfg.alert_thread)
+        self.log.log_status(str(signupThread))
         signupThread.replace_more_comments()
-        log.write('Replaced more comments'+"\n")
+        self.log.log_status('Replaced more comments')
         signUps = signupThread.comments
-        log.write(str(signUps)+"\n")
+        self.log.log_var("signUps",signUps)
         troopList = []
         for signUp in signUps:
             if self.detect_ORed(signUp.author):
                 print("Orangered "+str(signUp.author)+" ignored!")
-                log.write("Orangered "+str(signUp.author)+" ignored!")
+                self.log.log_status("Orangered "+str(signUp.author)+" ignored!")
                 continue
             recruit = signUp.author.__str__()
-            log.write(str(signUp)+"\n")
+            self.log.log_var("signUp",signUp)
             try:
                 if not (recruit in troopList):
                     troopList.append(recruit)
-                    log.write("Added user "+recruit+"to troopList.\n")
-                    log.flush()
+                    self.log.log_status("Added user "+recruit+"to troopList.")
             except:
-                log.write("ERROR:"+"\n")
-                log.write(str(recruit)+"\n")
+                self.log.log_status("ERROR:")
+                self.log.log_var("recruit",recruit)
                 pass
-        log.write("Retrieved Majors"+"\n")
-        log.write(str(troopList)+"\n")
+        self.log.log_status("Retrieved Majors")
+        self.log.log_var("troopList",troopList)
         print troopList
         return troopList
 
     def checkForGo(self):
+        """Checks Prime's inbox for messages to send out."""
         r = self.r
-        troopList = self.getUsers(self)
+        troopList = self.getUsers()
         PMs = r.get_unread(True, True)
         if PMs != None:
-            log.write("New messages!"+"\n")
+            self.log.log_status("New messages!")
             for PM in PMs:
                 PM.mark_as_read()
                 sLine = PM.subject.strip().upper()
-                if (sLine == "SEND MESSAGE") and (PM.author.__str__() in cfg.generals):
+                if (sLine == "SEND MESSAGE") and (PM.author.__str__() in self.cfg.generals):
                     sent_to = ''
                     for troops in troopList:
                         try:
                             r.send_message(troops,"Battle Reminder",PM.body)
                             sent_to += troops+'\n\n'
-                            log.write("Message: "+PM.body+" sent to "+troops+"\n")
+                            self.log.log_status("Message: "+PM.body+" sent to "+troops)
                         except:
-                            log.write("Error with " + troops+"\n")                  
+                            self.log.log_status("Error with " + troops)                  
                     PM.reply("Message sent to "+sent_to+"!")
         else:
-            log.write("No new messages!"+"\n")
-        log.flush()
+            self.log.log_status("No new messages!")
 
     def detect_ORed(self,user):
-        subReddit = self.r.get_subreddit(cfg.enemy_sub)
+        subReddit = self.r.get_subreddit(self.cfg.enemy_sub)
         mods = subReddit.get_moderators()
         for mod in mods:
             try:
                 if mod == user:
                     return True
-            except HTTPError:
+            except HTTPError as E:
                 print ("User no longer exists?")
-                log.write("HTTPError again, with user "+str(user)+"\n")
+                self.log.log_error(E)
+                self.log.log_status("HTTPError again, with user "+str(user))
                 continue
         return False
