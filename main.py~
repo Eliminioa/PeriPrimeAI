@@ -3,7 +3,6 @@
 import config
 import AIlogging
 import alert
-import aggregate
 import time as t
 
 class primeAI(object):
@@ -15,7 +14,6 @@ class primeAI(object):
         self.r = config.redditInstance
         self.log = config.logInstance
         self.alerter = alert.alertBot(self.config,self.log)
-        self.agg = aggregate.Aggregator(self.log,self.r)
         
     def run(self):
         self.log.log_status('Bot has started!')
@@ -23,16 +21,9 @@ class primeAI(object):
         while logged_in:
             self.log.log_status("Bot is still logged in as:")
             self.log.log_var('r',self.r)
-            self.log.log_status("Beginning alert phase!")
             self.alerter.checkForGo()
-            self.log.log_status("Alert phase complete!")
-            self.log.log_status("Beginning aggregation phase!")
-            for sub in self.config.chromaSubs:
-                self.agg.get_sub_content(sub)
-            self.agg.store_corpus()
-            self.log.log_status("Aggregation phase complete!")
-            t.sleep(10)
-
+            time.sleep(10)
+        
 if __name__ == '__main__':
     cfg = config.Config()
     AI = primeAI(cfg)

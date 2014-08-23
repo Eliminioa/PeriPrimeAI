@@ -42,6 +42,10 @@ class Config(object):
         return self.confData['generals']
         
     @property
+    def chromaSubs(self):
+        return self.confData['chromaSubs']
+        
+    @property
     def redditInstance(self):
         return self.r
         

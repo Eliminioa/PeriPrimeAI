@@ -13,7 +13,6 @@
 the command of a general. """
 
 #IMPORTS:#
-import json
 from requests.exceptions import HTTPError
 #END IMPORTS#
 
@@ -24,7 +23,6 @@ class alertBot(object):
         self.cfg = cfg
         self.log = log
         self.r = cfg.redditInstance
-        self.badMods = [str(m) for m in self.r.get_subreddit(self.cfg.enemy_sub).get_moderators()]
     
     def getUsers(self):
         r = self.r
@@ -32,7 +30,7 @@ class alertBot(object):
         self.log.log_status(str(signupThread))
         signupThread.replace_more_comments()
         self.log.log_status('Replaced more comments')
-        signUps = [sp for sp in signupThread.comments]
+        signUps = signupThread.comments
         self.log.log_var("signUps",signUps)
         troopList = []
         for signUp in signUps:
@@ -45,23 +43,22 @@ class alertBot(object):
             try:
                 if not (recruit in troopList):
                     troopList.append(recruit)
-                    self.log.log_status("Added user "+recruit+" to troopList.")
-                    print "Added user "+recruit+" to troopList. ",len(troopList)
+                    self.log.log_status("Added user "+recruit+"to troopList.")
             except:
                 self.log.log_status("ERROR:")
                 self.log.log_var("recruit",recruit)
                 pass
-            self.log.log_status("Retrieved Majors")
-            self.log.log_var("troopList",troopList)
-            json.dump(troopList,open('./config/periTroops.json','w'))
+        self.log.log_status("Retrieved Majors")
+        self.log.log_var("troopList",troopList)
+        print troopList
         return troopList
 
     def checkForGo(self):
         """Checks Prime's inbox for messages to send out."""
         r = self.r
         troopList = self.getUsers()
-        PMs = [pm for pm in r.get_unread(True, True)]
-        if len(PMs) != 0:
+        PMs = r.get_unread(True, True)
+        if PMs != None:
             self.log.log_status("New messages!")
             for PM in PMs:
                 PM.mark_as_read()
@@ -74,13 +71,21 @@ class alertBot(object):
                             sent_to += troops+'\n\n'
                             self.log.log_status("Message: "+PM.body+" sent to "+troops)
                         except:
-                            self.log.log_status("Error with " + troops) 
-                    self.log.log_status("Message sent to "+sent_to+"!")
+                            self.log.log_status("Error with " + troops)                  
                     PM.reply("Message sent to "+sent_to+"!")
         else:
             self.log.log_status("No new messages!")
 
     def detect_ORed(self,user):
-        if str(user) in self.badMods:
-            return True
+        subReddit = self.r.get_subreddit(self.cfg.enemy_sub)
+        mods = subReddit.get_moderators()
+        for mod in mods:
+            try:
+                if mod == user:
+                    return True
+            except HTTPError as E:
+                print ("User no longer exists?")
+                self.log.log_error(E)
+                self.log.log_status("HTTPError again, with user "+str(user))
+                continue
         return False
