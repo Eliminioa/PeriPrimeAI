@@ -30,9 +30,13 @@ class Aggregator(object):
         sub = self.r.get_subreddit(sub)
         sName = str(sub)
         self.log.log_var("sub",sub)
-        getters = (sub.get_new,sub.get_hot,sub.get_top_from_all,sub.get_top_from_year,sub.get_controversial_from_all,sub.get_controversial_from_year)
+        getters = (sub.get_new,sub.get_top)
         for getter in getters: #thanks to GitHub user KevOrr for this bit of code!
-            stuff = [p for p in getter(limit=limit)]
+            try:
+                stuff = [p for p in getter(limit=limit)]
+            except HTTPError as E:
+                self.log.log_error(E)
+                continue
             fulltext = ''
             authors={}
             x=0
@@ -59,7 +63,7 @@ class Aggregator(object):
                             authors[cmnter] = replyData[cmnter]                
                     x+=1
                     self.cf['readIDs'].append(post.id)
-                    print '{} out of {} done after {} seconds ({}%)'.format(x,limit,t.time()-init_time,(float(x)/limit)*100)
+                    print '{} out of {} done after {} seconds ({}%)'.format(x,len(stuff),t.time()-init_time,(float(x)/len(stuff))*100)
             except HTTPError as E:
                 self.log.log_status("It is likely that the sub "+sName+" is unavavailable due to being private or deleted.")
                 self.log.log_error(E)

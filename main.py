@@ -3,6 +3,7 @@
 import config
 import AIlogging
 import alert
+import sys
 import aggregate
 import time as t
 
@@ -27,10 +28,18 @@ class primeAI(object):
             self.alerter.checkForGo()
             self.log.log_status("Alert phase complete!")
             self.log.log_status("Beginning aggregation phase!")
-            for sub in self.config.chromaSubs:
-                self.agg.get_sub_content(sub)
-            self.agg.store_corpus()
-            self.log.log_status("Aggregation phase complete!")
+            try:
+                for sub in self.config.chromaSubs:
+                    self.agg.get_sub_content(sub)
+                self.agg.store_corpus()
+                self.log.log_status("Aggregation phase complete!")
+            except:
+                e = sys.exc_info()[0]
+                print repr(e)
+                try:
+                    self.log.log_error(e)
+                except:
+                    self.log.log_status(repr(e))
             t.sleep(10)
 
 if __name__ == '__main__':
