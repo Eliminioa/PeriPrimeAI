@@ -17,11 +17,13 @@ class primeAI(object):
         self.log = config.logInstance
         self.alerter = alert.alertBot(self.config,self.log)
         self.agg = aggregate.Aggregator(self.log,self.r)
+        self.majors = config.majors
         
     def run(self):
         self.log.log_status('Bot has started!')
         logged_in = self.r.is_logged_in()
         while logged_in:
+            print "Beginning iteration"
             self.log.log_status("Bot is still logged in as:")
             self.log.log_var('r',self.r)
             self.log.log_status("Beginning alert phase!")
@@ -34,6 +36,7 @@ class primeAI(object):
                 self.agg.store_corpus()
                 self.log.log_status("Aggregation phase complete!")
             except:
+                self.log.log_status("Aggregation phase failed!")
                 e = sys.exc_info()[0]
                 print repr(e)
                 try:

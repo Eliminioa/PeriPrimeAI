@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #BEGIN IMPORTS
-from json import load
+from json import load, dump
 import praw
 import AIlogging
 
@@ -24,6 +24,13 @@ class Config(object):
         self.log.log_var("r",self.r)
         self.r.login(self.confData['reddit'],self.confData['password'])
         self.log.log_status("Logged into reddit successfully!")
+        
+    def add_major(self,major):
+        if major not in self.majors:
+            self.confData['majors'].append(major)
+        
+    def save_cfg(self,conffile='./config/config.json'):
+        dump(self.confData,open(conffile,'w'))
     
     @property
     def email_username(self):
@@ -44,6 +51,10 @@ class Config(object):
     @property
     def chromaSubs(self):
         return self.confData['chromaSubs']
+    
+    @property
+    def majors(self):
+        return self.confData['majors']
         
     @property
     def redditInstance(self):
