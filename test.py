@@ -1,20 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Aug 20 20:37:03 2014
+Created on Tue Sep 16 16:28:05 2014
 
 @author: boggs
 """
 
-import time as t
-import config
-import aggregate
-cfg = config.Config()
-log = cfg.logInstance
-r =cfg.redditInstance
-agg = aggregate.Aggregator(log,r)
-
-print t.asctime()
-for sub in ['councilofkarma','periwinkle','orangered','goodmorningperiwinkle','chromalore']:
-    print sub
-    test = agg.get_sub_content(sub,1000)
-agg.store_corpus()
+import praw
+r = praw.Reddit('Eliminioa testing')
+r.login('Eliminioa','KeilHallAwesome')
+arenaBot = r.get_redditor('valkyribot')
+overview = [item for item in r.get_content(url=arenaBot._url)]
+comments = [o for o in overview if str(type(o))=="<class 'praw.objects.Comment'>"]
+submissions = [o for o in overview if str(type(o))=="<class 'praw.objects.Submission'>"]

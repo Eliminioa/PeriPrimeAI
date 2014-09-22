@@ -27,7 +27,17 @@ class primeAI(object):
             self.log.log_status("Bot is still logged in as:")
             self.log.log_var('r',self.r)
             self.log.log_status("Beginning alert phase!")
-            self.alerter.checkForGo()
+            try:
+                self.alerter.checkForGo()
+            except:
+                self.log.log_status("Alert phase failed!")
+                e = sys.exc_info()[0]
+                print(repr(e))
+                try:
+                    self.log.log_error(e)
+                except:
+                    self.log.log_status(repr(e))
+                
             self.log.log_status("Alert phase complete!")
             self.log.log_status("Beginning aggregation phase!")
             try:
@@ -44,7 +54,7 @@ class primeAI(object):
                 except:
                     self.log.log_status(repr(e))
             t.sleep(10)
-
+            
 if __name__ == '__main__':
     cfg = config.Config()
     AI = primeAI(cfg)
