@@ -27,8 +27,10 @@ class alertBot(object):
         self.r = cfg.redditInstance
         self.badMods = [str(m) for m in self.r.get_subreddit(self.cfg.enemy_sub).get_moderators()]
     
-    def getUsers(self):
+    def getUsers(self,majors='default'):
         r = self.r
+        if majors != default:
+            return majors
         majors = self.cfg.majors
         signupThread = r.get_submission(submission_id=self.cfg.alert_thread)
         self.log.log_status(str(signupThread))
@@ -134,6 +136,6 @@ class alertBot(object):
         return keys
         
     def detect_ORed(self,user):
-        if str(user) in self.badMods:
+        if str(user) in self.cfg.ORs:
             return True
         return False

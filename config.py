@@ -3,6 +3,7 @@
 from json import load, dump
 import praw
 import AIlogging
+import re
 
 #END IMPORTS
 
@@ -31,6 +32,36 @@ class Config(object):
         
     def save_cfg(self,conffile='./config/config.json'):
         dump(self.confData,open(conffile,'w'))
+        
+    def list_players(self, bot = 'Chromabot'):
+        """Builds and updates a list of players and sorts them into their teams."""
+        bot = self.r.get_redditor(bot)
+        print 'got bot'
+        comments = [item for item in self.r.get_content(url=bot._url,limit=None) if str(type(item))=="<class 'praw.objects.Comment'>"]
+        print 'got comments'
+        skirms = [thread for thread in comments if "Confirmed actions for this skirmish:" in thread.body]
+        print 'got skirms',skirms
+        idPattern = re.compile(r"\w+\s+\(+\w+\)")
+        print 'compiled pattern'
+        for skirm in skirms:
+            print'examining next skirm'
+            names = idPattern.findall(skirm.body)
+            for name in names:
+                if 'Orangered' in name and name.split()[0] not in self.confData['orangereds']:
+                    self.confData['orangereds'].append(name.split()[0])
+                    print ('Adding '+name.split()[0]+'to oreds')
+                elif 'Periwinkle' in name and name.split()[0] not in self.confData['periwinkles']:
+                    self.confData['periwinkles'].append(name.split()[0])
+                    print ('Adding '+name.split()[0]+'to peris')
+        self.save_cfg()
+            
+    @property
+    def orangereds(self):
+        return self.confData['orangereds']
+        
+    @property
+    def periwinkles(self):
+        return self.confData['periwinkles']
     
     @property
     def email_username(self):

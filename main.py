@@ -21,8 +21,9 @@ class primeAI(object):
         
     def run(self):
         self.log.log_status('Bot has started!')
-        logged_in = self.r.is_logged_in()
-        while logged_in:
+        logged_in = self.r.is_logged_in
+        while logged_in():
+            self.config.list_players()
             print "Beginning iteration"
             self.log.log_status("Bot is still logged in as:")
             self.log.log_var('r',self.r)
