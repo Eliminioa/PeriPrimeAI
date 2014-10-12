@@ -136,6 +136,6 @@ class alertBot(object):
         return keys
         
     def detect_ORed(self,user):
-        if str(user) in self.cfg.ORs:
+        if str(user) in self.cfg.orangereds:
             return True
         return False
