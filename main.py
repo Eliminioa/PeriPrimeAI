@@ -30,6 +30,11 @@ class primeAI(object):
             self.log.log_status("Beginning alert phase!")
             try:
                 self.alerter.checkForGo()
+            except KeyboardInterrupt:
+                print "Exiting program!"
+                self.config.save_cfg()
+                self.log.log_status('Exited bot on account of Keyboard Interrupt')
+                break
             except:
                 self.log.log_status("Alert phase failed!")
                 e = sys.exc_info()[0]
@@ -38,7 +43,6 @@ class primeAI(object):
                     self.log.log_error(e)
                 except:
                     self.log.log_status(repr(e))
-                
             self.log.log_status("Alert phase complete!")
             self.log.log_status("Beginning aggregation phase!")
             try:
@@ -46,6 +50,11 @@ class primeAI(object):
                     self.agg.get_sub_content(sub)
                 self.agg.store_corpus()
                 self.log.log_status("Aggregation phase complete!")
+            except KeyboardInterrupt:
+                print "Exiting program!"
+                self.config.save_cfg()
+                self.log.log_status('Exited bot on account of Keyboard Interrupt')
+                break
             except:
                 self.log.log_status("Aggregation phase failed!")
                 e = sys.exc_info()[0]

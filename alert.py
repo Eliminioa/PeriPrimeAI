@@ -134,6 +134,11 @@ class alertBot(object):
                 if bad in sent:
                     keys += "b"
         return keys
+    
+    def cleanse_list(self):
+        for user in self.cfg.majors:
+            if user in self.cfg.orangereds:
+                self.cfg.confdata['majors'].remove(user)
         
     def detect_ORed(self,user):
         if str(user) in self.cfg.orangereds:
