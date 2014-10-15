@@ -29,7 +29,7 @@ class alertBot(object):
     
     def getUsers(self,majors='default'):
         r = self.r
-        if majors != default:
+        if majors != 'default':
             return majors
         majors = self.cfg.majors
         signupThread = r.get_submission(submission_id=self.cfg.alert_thread)
@@ -138,7 +138,8 @@ class alertBot(object):
     def cleanse_list(self):
         for user in self.cfg.majors:
             if user in self.cfg.orangereds:
-                self.cfg.confdata['majors'].remove(user)
+                self.cfg.confData['majors'].remove(user)
+                self.cfg.save_cfg()
         
     def detect_ORed(self,user):
         if str(user) in self.cfg.orangereds:
