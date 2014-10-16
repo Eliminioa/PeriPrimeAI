@@ -12,12 +12,6 @@
 """Module with the class for letting Periwinkle Prime send out battle alerts at
 the command of a general. """
 
-#IMPORTS:#
-import json
-from nltk.corpus import wordnet as wn
-from requests.exceptions import HTTPError
-#END IMPORTS#
-
 class alertBot(object):
     """Only use checkForGo(), other methods are internal and idk what the hell
     to do with them."""
@@ -40,12 +34,13 @@ class alertBot(object):
         self.log.log_var("signUps",signUps)
         troopList = majors
         for signUp in signUps:
-            if self.detect_ORed(signUp.author):
+            recruit = signUp.author.__str__()
+            if self.detect_ORed(signUp.author) and not (recruit in troopList):
+                troopList.append(recruit)
                 self.replyToSignup(signUp,False)
                 print("Orangered "+str(signUp.author)+" ignored!")
                 self.log.log_status("Orangered "+str(signUp.author)+" ignored!")
                 continue
-            recruit = signUp.author.__str__()
             self.log.log_var("signUp",signUp)
             try:
                 if not (recruit in troopList):
@@ -68,6 +63,7 @@ class alertBot(object):
         """Checks Prime's inbox for messages to send out."""
         r = self.r
         troopList = self.getUsers()
+        troopList = [user for user in troopList if not self.detect_ORed(user)]
         PMs = [pm for pm in r.get_unread(True, True)]
         if len(PMs) != 0:
             self.log.log_status("New messages!")
