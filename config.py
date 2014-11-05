@@ -85,6 +85,10 @@ class Config(object):
         return self.confData['majors']
         
     @property
+    def blacklist(self):
+        return self.confData['blacklist']
+        
+    @property
     def redditInstance(self):
         return self.r
         

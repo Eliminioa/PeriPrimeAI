@@ -36,13 +36,9 @@ class primeAI(object):
                 self.log.log_status('Exited bot on account of Keyboard Interrupt')
                 break
             except:
-                self.log.log_status("Alert phase failed!")
-                e = sys.exc_info()[0]
-                print(repr(e))
-                try:
-                    self.log.log_error(e)
-                except:
-                    self.log.log_status(repr(e))
+                e = sys.exc_info()
+                self.log.log_status("Alert phase failed!".format)
+                self.log.log_status(repr(e))
             self.log.log_status("Alert phase complete!")
             self.log.log_status("Beginning aggregation phase!")
             try:
@@ -56,14 +52,14 @@ class primeAI(object):
                 self.log.log_status('Exited bot on account of Keyboard Interrupt')
                 break
             except:
-                self.log.log_status("Aggregation phase failed!")
-                e = sys.exc_info()[0]
-                print repr(e)
-                try:
-                    self.log.log_error(e)
-                except:
-                    self.log.log_status(repr(e))
+                e = sys.exc_info()
+                self.log.log_status("Aggregation phase failed!".format)
+                self.log.log_status(repr(e))
             t.sleep(10)
+            logged_in = self.r.is_logged_in
+        self.log.log_status('Bot has stopped!')
+        self.r.send_message('Eliminioa','PRIME ERROR','PERIWINKLE PRIME HAS CEASED TO FUNCTION. INVESTIGATE IMMEDIATELY! NOTE THAT IT RESTARTS AUTOMATICALLY!')
+        
             
 if __name__ == '__main__':
     cfg = config.Config()

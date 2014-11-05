@@ -63,7 +63,7 @@ class alertBot(object):
         """Checks Prime's inbox for messages to send out."""
         r = self.r
         troopList = self.getUsers()
-        troopList = [user for user in troopList if not self.detect_ORed(user)]
+        troopList = [user for user in troopList if (not self.detect_ORed(user)) and (not user in self.cfg.blacklist)]
         PMs = [pm for pm in r.get_unread(True, True)]
         if len(PMs) != 0:
             self.log.log_status("New messages!")

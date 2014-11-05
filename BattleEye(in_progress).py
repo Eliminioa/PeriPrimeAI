@@ -65,6 +65,7 @@ class BattleEye(object):
                     #Since the bot has already posted a comment, commence bantering
                 else:
                     thread = self.activeBattle['thread'].add_comment(self.initial_comment())
+                    self.activeBattle['commented'] = True
                     
                 
     def get_bTime(self,subBody):
