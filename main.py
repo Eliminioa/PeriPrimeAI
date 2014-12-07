@@ -21,9 +21,15 @@ class primeAI(object):
         
     def run(self):
         self.log.log_status('Bot has started!')
+        finding_bot = True #variable to make sure the process of finding Chromabot doesn't time out
         logged_in = self.r.is_logged_in
         while logged_in():
-            self.config.list_players()
+            while finding_bot:
+                try:
+                    self.config.list_players()
+                    finding_bot = False #we're no longer looking for chromabot, we've successfully found it
+                except:
+                    t.sleep(60) #otherwise, wait and try again
             print "Beginning iteration"
             self.log.log_status("Bot is still logged in as:")
             self.log.log_var('r',self.r)
@@ -56,7 +62,7 @@ class primeAI(object):
                 self.log.log_status("Aggregation phase failed!".format)
                 self.log.log_status(repr(e))
             t.sleep(10)
-            logged_in = self.r.is_logged_in
+            finding_bot = True
         self.log.log_status('Bot has stopped!')
         self.r.send_message('Eliminioa','PRIME ERROR','PERIWINKLE PRIME HAS CEASED TO FUNCTION. INVESTIGATE IMMEDIATELY! NOTE THAT IT RESTARTS AUTOMATICALLY!')
         
